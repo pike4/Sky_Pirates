@@ -78,7 +78,7 @@ var getChunks = function(x, y, socket) {
 
 		if(result.length > 0)
 		{
-			console.log("send ", result.length, " entities to the client");
+			console.log("send out ", players.size, " players");
 			socket.emit('send_chunks', result);
 			ret.push(result);
 		}
@@ -88,6 +88,7 @@ var getChunks = function(x, y, socket) {
 //Update the given player
 var updatePlayer = function(p) {
 	players.set(p.id, p);
+	console.log("update player at x = ", p.chunkX);
 	timeouts.set(p.id, Date.now());
 }
 
@@ -117,10 +118,10 @@ var shuffleOwnership = function() {
 				}
 			});
 			if(Math.abs(newOwner - curEnt.owner) > 0.01) {
-				console.log("player ", newOwner, " takes entity ", curEnt.id, " from: ", curEnt.owner);
+				//console.log("player ", newOwner, " takes entity ", curEnt.id, " from: ", curEnt.owner);
 			}
 			else {
-				console.log("player ", newOwner, " retains entity ", curEnt.id);
+				//console.log("player ", newOwner, " retains entity ", curEnt.id);
 			}
 			
 			var updateQuery  = "UPDATE entities SET owner='" + newOwner;
@@ -183,10 +184,10 @@ var spawnBase = function(x, y) {
 	var queryBegin = "INSERT INTO entities (x, y, columnID, rowID, owner, type, health) VALUES (";
 	var minX = 0;
 	var maxX = 500;
-	var minXChunk = x - 1;
-	var maxXChunk = x + 1;
-	var minYChunk = y - 1;
-	var maxYChunk = y + 1;
+	var minXChunk = x - 3;
+	var maxXChunk = x + 3;
+	var minYChunk = y - 3;
+	var maxYChunk = y + 3;
 
 	var xChunk = Math.round(Math.random() * (maxXChunk - minXChunk) + minXChunk);
 	var yChunk = Math.round(Math.random() * (maxYChunk - minYChunk) + minYChunk);
@@ -232,7 +233,7 @@ var spawnBases = function() {
 
 //TODO: store the given entities in the database from list sent by client
 var updateEntities = function(list) {
-	console.log("updating ", list.length, " entities");
+	//console.log("updating ", list.length, " entities");
 
 	for(var i = 0; i < list.length; i++) {
 		var curEnt = list[i];

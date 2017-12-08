@@ -238,11 +238,12 @@ class Player extends Entity
 	fire() {
 
 		if(this.curWeapon == 1) {
-			if(this.hasElapsed(this.fireTimer, 500)) {
+			if(this.hasElapsed(this.fireTimer, (600 - (50 * SGSpeedLevel)))) {
 
-				for(var i = 0; i < 10; i++) {
+				for(var i = 0; i < 4 + SGCountLevel; i++) {
 					var newGuy = new PlayerBullet(this.x, this.y, 
-						this.chunkX, this.chunkY, i * 2 * 3.14159 / 10);
+						this.chunkX, this.chunkY, this.img.rotation - (3.14159 / (SGCountLevel + 4) / 10 * 2  * i) 
+							+ (3.14159 / 11), (SGDamageLevel + 1) * 15);
 					newGuy.update();
 				}
 				
@@ -252,9 +253,9 @@ class Player extends Entity
 
 		else if(this.curWeapon == 2) {
 			console.log("fire weapon 2");
-			if(this.hasElapsed(this.fireTimer, 100)) {
+			if(this.hasElapsed(this.fireTimer, (110 - (10 * MGSpeedLevel)))) {
 				var newGuy = new PlayerBullet(this.x, this.y, 
-						this.chunkX, this.chunkY, this.img.rotation);
+						this.chunkX, this.chunkY, this.img.rotation, (SGDamageLevel + 1) * 15);
 
 				
 				this.fireTimer = this.curTime();
@@ -329,7 +330,6 @@ class Pirate extends Entity
 		}
 
 		if(this.hasElapsed(this.fireTimer, 2000)) {
-			console.log('fire!');
 			new Bullet(this.x, this.y, this.chunkX, this.chunkY, diffAngle);
 			this.fireTimer = this.curTime();
 		}
@@ -372,6 +372,7 @@ class Pirate extends Entity
 
 	kill(dmg) {
 		this.health -= dmg;
+		console.log("took " + dmg + " damage");
 
 		if(this.health <= 0) {
 			gold += 20;
@@ -466,7 +467,7 @@ class PlayerMissile extends Entity {
 
 	getHeading() 
 	{
-		var newDiff = 3;
+		var newDiff = 1 + missileTurnLevel;
 		var target;
 	
 		if(bases.has(this.curTarget)) {
@@ -519,8 +520,8 @@ class PlayerMissile extends Entity {
 	update() 
 	{
 		this.getHeading();
-		var dY = Math.sin(this.img.rotation) * 8;
-		var dX = Math.cos(this.img.rotation) * 8;
+		var dY = Math.sin(this.img.rotation) * (5 + missileSpeedLevel);
+		var dX = Math.cos(this.img.rotation) * (5 + missileSpeedLevel);
 
 		this.x += dX;
 		this.y += dY;
@@ -542,7 +543,7 @@ class PlayerMissile extends Entity {
 class PlayerBullet extends Entity
 {
 
-	constructor(x, y, cX, cY, theta) 
+	constructor(x, y, cX, cY, theta, dmg)
 	{
 		super(0, x, y, cX, cY);
 		this.img = game.add.sprite(x, y, 'spr_bullet');
@@ -552,6 +553,7 @@ class PlayerBullet extends Entity
 		bullets.set(this.id, this);
 		this.wad = 0;
 		this.draw();
+		this.damage = dmg;
 	}
 
 
@@ -577,8 +579,8 @@ class PlayerBullet extends Entity
 
 			if(Math.hypot(value.x - xx, value.y - yy) < 50) {
 				console.log("got one");
-				value.kill(20);
-				killEntity(value.id);
+				value.kill(this.damage);
+				//killEntity(value.id);
 				good = false;
 				break;
 			}
@@ -592,8 +594,8 @@ class PlayerBullet extends Entity
 			for (var value of it) {
 				if(Math.hypot(value.x - xx, value.y - yy) < 80) {
 					console.log("got one");
-					value.kill(20);
-					killEntity(value.id);
+					value.kill(this.damage);
+					//killEntity(value.id);
 					good = false;
 					break;
 				}		

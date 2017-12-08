@@ -29,9 +29,7 @@ var receiveChunks = function(msg) {
 				setEntity(msg[i]);
 			}
 		}
-		console.log("entities received: ", msg.length);
 		if(msg.length == 0) {
-			console.log('empty!');
 		}
 	}
 	else {
@@ -46,21 +44,21 @@ var receiveBullets = function(msg) {
 
 // Given a database row, update the world to include the new entity
 var setEntity = function(ent) {
-
-	if( (ent.id - player.id) < 0.01) { return; }
-
+	if(Math.abs(player.id - ent.id) < 0.001) { return; }
+	var iter = otherPlayers.values();
 	if(ent.type == "P") {
+		console.log("other player id: ", ent.id, " my id: ", player.id);
 		
 		var P;
-		console.log("player!");
+		//console.log("player!");
 
 		if(otherPlayers.has(ent.id) ) {
-			console.log("update player");
+			//console.log("update player at x: ", ent.x, " y: ", ent.y, " cx: ", ent.chunkX, " cy: ", ent.chunkY);
 			P = otherPlayers.get(ent.id);
-			P.modify(ent.x, ent.y, ent.columnID, ent.rowID, ent.rotation);
+			P.modify(ent.x, ent.y, ent.chunkX, ent.chunkY, ent.rotation);
 		} else {
-			console.log("new player: ", ent.id);
-			P = new OtherPlayer(ent.type, ent.id, ent.x, ent.y, ent.columnID, ent.rowID);
+			//console.log("new player: ", ent.id);
+			P = new OtherPlayer(ent.type, ent.id, ent.x, ent.y, ent.chunkX, ent.chunkY);
 		}
 		
 		otherPlayers.set(ent.id, P);
@@ -70,7 +68,6 @@ var setEntity = function(ent) {
 		var P = pirates.get(ent.id);
 		if(P === undefined) {
 			P = new Pirate(ent.id, ent.owner, ent.x, ent.y, ent.columnID, ent.rowID, ent.health)
-			console.log("new pirate! ID = ", ent.id);
 		} 
 		//The received entity is not owned by us
 		else if(Math.abs(ent.owner - player.id) > 0.01) {
@@ -81,7 +78,6 @@ var setEntity = function(ent) {
 		}
 		//The received entity IS owned by us, but the player doesn't know it yet
 		else if( Math.abs(P.owner - player.id) > 0.01) {
-			console.log("acquired entity: ", P.id);
 			P.owner = ent.owner;
 			pirates.set(P.id, P);
 		}
