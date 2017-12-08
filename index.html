@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Sky Pirates</title>
+		<script src="network.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="//cdn.jsdelivr.net/phaser/2.5.0/phaser.min.js"></script>
+		<script src="entity.js"></script>
+		<script src="game.js"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			
+
+			window.onload = function() {
+				game = new Phaser.Game(800, 600, Phaser.AUTO, '', 
+				{ preload: preload, create: create, update: update});
+			};
+		</script>
+	</body>
+</html>
